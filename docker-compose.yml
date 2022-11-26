@@ -9,7 +9,7 @@ services:
     restart: always
     tty: true
     environment:
-      MYSQL_DATABASE: devfast
+      MYSQL_DATABASE: devfest
       MYSQL_USER: cpprhtn
       MYSQL_PASSWORD: 12341234
       MYSQL_ROOT_PASSWORD: 12341234
