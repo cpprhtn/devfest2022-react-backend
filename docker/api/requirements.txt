@@ -1,0 +1,6 @@
+mysqlclient
+sqlalchemy
+uvicorn
+fastapi
+jinja2
+aiofiles
