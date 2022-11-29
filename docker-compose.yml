@@ -30,7 +30,7 @@ services:
     container_name: "api"
     build: ./docker/api
     ports:
-      - "8800:8800"
+      - "8000:8000"
     volumes:
       - ./code:/usr/src/server
     networks:
