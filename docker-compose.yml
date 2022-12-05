@@ -1,33 +1,58 @@
 version: "3.3"
 
 services:
-
   # MySQL
-  db:
-    container_name: "db"
+  database:
+    container_name: "db11"
     build: ./docker/mysql
-    restart: always
-    tty: true
-    environment:
-      MYSQL_DATABASE: devfest
-      MYSQL_USER: cpprhtn
-      MYSQL_PASSWORD: 12341234
-      MYSQL_ROOT_PASSWORD: 12341234
     ports:
       - "3306:3306"
     volumes:
-      - ./docker/mysql/initdb.d:/docker-entrypoint-initdb.d
-      - ./docker/mysql/conf.d:/etc/mysql/conf.d
-      - ./log/mysql:/var/log/mysql
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_DATABASE: dev
+      MYSQL_USER: cpprhtn
+      MYSQL_PASSWORD: 12341234
+    command:
+      - --character-set-server=utf8 
+      - --collation-server=utf8_general_ci
+      - --init-connect='SET NAMES utf8'
+      - --character-set-server=utf8mb4 
+      - --collation-server=utf8mb4_unicode_ci
+
+    restart: always
     networks:
       - local-net
+
+  
+  # db:
+  #   container_name: "db9"
+  #   build: ./docker/mysql
+  #   restart: always
+  #   tty: true
+  #   environment:
+  #     MYSQL_DATABASE: devfest
+  #     MYSQL_USER: root
+  #     MYSQL_PASSWORD: 12341234
+  #     MYSQL_ROOT_PASSWORD: 12341234
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - ./docker/mysql/initdb.d:/docker-entrypoint-initdb.d
+  #     - ./docker/mysql/conf.d:/etc/mysql/conf.d
+  #     - ./log/mysql:/var/log/mysql:rw
+  #   networks:
+  #     - local-net
 
 
   # FastAPI
   api:
     links:
-      - db
-    container_name: "api"
+      - database
+    container_name: "api11"
     build: ./docker/api
     ports:
       - "8000:8000"

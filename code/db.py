@@ -3,10 +3,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
-user_name = "cpprhtn"
-password = "12341234"
-host = "db" 
-database_name = "devfest"
+user_name = "root"
+password = "rootpwd"
+host = "db11" 
+database_name = "dev"
 
 DATABASE = 'mysql://%s:%s@%s/%s?charset=utf8' % (
     user_name,
