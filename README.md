@@ -198,3 +198,85 @@ CREATE TABLE userinfo (
     - 설명
     - chats ∙ favorites ∙ views 갯수
     - Other Item 리스트(사진, 제목, 가격) - 8개
+
+### GCP 배포까지 정리
+#### 1. nginx 설치
+
+```
+sudo apt update
+sudo apt install nginx -y
+```
+
+#### 2. 발급받은 도메인을 nginx에 등록
+> sudo nano /etc/nginx/nginx.conf
+
+```
+worker_processes  auto;
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+
+    # 443 포트로 접근시 ssl을 적용한 뒤 3000포트로 요청을 전달해주도록 하는 설정.
+    server {
+            server_name devfest2022.duckdns.org;
+
+            location / {
+                    proxy_pass http://0.0.0.0:8000;
+            }
+
+            listen 443 ssl; # managed by Certbot
+            ssl_certificate /etc/letsencrypt/live/devfest2022.duckdns.org/fullchain.pem; # managed by Cert>
+            ssl_certificate_key /etc/letsencrypt/live/devfest2022.duckdns.org/privkey.pem; # managed by Ce>
+
+            include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+            ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+    }
+
+    # 80 포트로 접근시 443 포트로 리다이렉트 시켜주는 설정
+    server {
+             return 301 https://$host$request_uri;
+             # managed by Certbot
+
+
+            listen 80;
+            server_name devfest2022.duckdns.org;
+            return 404; # managed by Certbot
+    }
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    keepalive_timeout  65;
+}
+```
+
+#### 3. nginx 재시작
+
+```
+sudo service nginx restart
+sudo service nginx reload
+```
+
+#### 4. Let's Encrypt 인증서 발급
+
+```
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt install certbot python3-certbot-nginx
+
+sudo certbot --nginx
+```
+
+#### 5. 접속 테스트
+> curl https://[발급받은 도메인]
